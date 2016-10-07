@@ -1,0 +1,71 @@
+plugins {
+    id 'de.dfki.mary.voicebuilding-festvox' version '5.2.0'
+    id 'de.dfki.mary.voicebuilding-legacy' version '5.2.0'
+}
+
+group 'de.dfki.mary'
+version '5.2'
+
+voice {
+    name = 'ac-nsh'
+    language = 'ru'
+    region = 'RU'
+    gender = 'male'
+    type = 'unit selection'
+    description = 'A male Russian unit selection voice'
+    license {
+        name = 'Simplified BSD License'
+        shortName = 'BSD'
+        url = 'http://github.com/cmusphinx/voice-ac-nsh/LICENSE.txt'
+    }
+    samplingRate = 16000
+}
+
+repositories {
+    ivy {
+        url 'http://mary.dfki.de/repo'
+        layout 'maven'
+    }
+    ivy {
+        url 'http://alphacephei.com/test/tts/'
+        layout 'pattern', {
+            artifact '[module]-[revision].[ext]'
+        }
+    }
+}
+
+dependencies {
+    data group: 'com.alphacephei', name: 'ac_ru_nsh_clunits', version: '0.6', ext: 'tar.bz2'
+}
+
+def mapping = [
+    'pau' : '_',
+    'ssil': '_',
+]
+
+task simpleLab(type: Copy) {
+    from processDataResources
+    into "$project.buildDir/lab"
+    include '*.lab'
+    filter {
+        def label = it.trim().split(/\s+/, 3).last()
+        it.trim().replaceAll(label) {
+            mapping[it] ?: it
+        }
+    }
+}
+
+legacyInit {
+    dependsOn wav, simpleLab, text
+    def basenameListFile = file("$buildDir/basenames.lst")
+    outputs.files basenameListFile
+    doLast {
+        basenameListFile.withWriter { basenameList ->
+            fileTree(wav.destDir).collect {
+                it.name - '.wav'
+            }.each {
+                basenameList.writeLine it
+            }
+        }
+    }
+}
