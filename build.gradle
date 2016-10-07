@@ -14,9 +14,9 @@ voice {
     type = 'unit selection'
     description = 'A male Russian unit selection voice'
     license {
-        name = 'Simplified BSD License'
-        shortName = 'BSD'
-        url = 'http://github.com/cmusphinx/voice-ac-nsh/LICENSE.txt'
+        name = 'Creative Commons Attribution-ShareAlike 3.0 Unported'
+        shortName = 'CC-BY-SA'
+        url = 'http://mary.dfki.de/download/by-sa-3.0.html'
     }
     samplingRate = 16000
 }
